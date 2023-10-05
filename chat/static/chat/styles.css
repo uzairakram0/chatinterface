@@ -1,0 +1,23 @@
+.bi-chevron-right {
+    font-size: 1.5em;
+}
+
+.btn-transparent:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.btn-transparent:active {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.chat-box {
+    height: 85vh; 
+}
+
+.clear-chat-button {
+    position: relative;
+    right: 150px;
+}

@@ -1,0 +1,87 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{% block title %}Chat Agent{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" crossorigin="anonymous">
+    <link href="{% static 'chat/styles.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h1 class="mb-0">Chat Agent <i class="bi bi-robot"></i></h1>
+            <button id="clearChat" class="btn btn-sm btn-danger clear-chat-button" style="position: relative; right: 240px;"><i class="bi bi-trash"></i></button>
+            <form method="post" action="{% url 'key' %}" class="d-flex align-items-center">
+                {% csrf_token %}
+                <label for="apiKey" class="form-label mb-0 mr-2">API&nbsp;Key</label>
+                <input type="text" class="form-control mr-2" id="apiKey" name="apiKey" placeholder="Enter API key" autocomplete="off">
+                <button type="submit" class="btn btn-sm btn-warning"><i class="bi bi-key"></i></button>
+            </form>
+        </div>
+
+        <div class="chat-box border p-3 mb-3">
+            {% for message in messages %}
+            <div class="p-2">
+                <strong>{{ message.sender }}:</strong> {{ message.content }}
+            </div>
+            {% endfor %}
+            <div class="d-flex justify-content-center mt-2">
+                <div id="loading-spinner" class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <form id="chatForm" method="post" action="{% url 'index' %}">
+            {% csrf_token %}
+            <div class="form-group position-relative">
+                <textarea name="prompt" class="form-control expandable pr-5" rows="1" placeholder="Type a message..."></textarea>
+                <button type="submit" class="btn btn-icon btn-transparent border-0 position-absolute" style="top: 50%; right: 10px; transform: translateY(-50%);">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/4.0.2/autosize.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            autosize(document.querySelectorAll('textarea'));
+
+            const form = document.getElementById('chatForm');
+            const spinner = document.getElementById('loading-spinner');
+            const textarea = form.querySelector('textarea');
+
+            spinner.style.display = 'none';
+
+            document.getElementById('clearChat').addEventListener('click', function() {
+                window.location.href = "{% url 'clear' %}";
+            });
+
+            textarea.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    form.submit();
+                    if (textarea.value.trim() !== '') {
+                        spinner.style.display = 'flex';
+                    }
+                }
+            });
+
+            form.addEventListener('submit', function () {
+                if (textarea.value.trim() !== '') {
+                    spinner.style.display = 'flex';
+                }
+            });
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+</body>
+
+</html>
